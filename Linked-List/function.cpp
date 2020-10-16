@@ -5,7 +5,8 @@ using namespace std;
 
 
 void List::Insert() {
-	int a; Node *newNode = new Node();
+	int a; 
+	Node *newNode = new Node();
 	if (size != 0) {
 		cout << "\t\t\t\tChoose Option" << endl;
 		cout << "\t\t\t\t1. After" << endl;
@@ -22,20 +23,21 @@ void List::Insert() {
 			{
 				headnode = newNode;
 				currentnode = newNode;
-				LCN = newNode;
+				newNode->setPre(nullptr);
 				newNode->setNext(nullptr);
 			}
 			else if (currentnode->getNext() == nullptr) {
 				currentnode->setNext(newNode);
-				LCN = currentnode;
 				currentnode = newNode;
 				currentnode->setNext(nullptr);
+				newNode->setPre(nullptr);
 			}
 			else
 			{
+				newNode->setPre(currentnode);
 				newNode->setNext(currentnode->getNext());
-				LCN = currentnode;
-				LCN->setNext(newNode);
+				(currentnode->getNext())->setPre(newNode);
+				currentnode->setNext(newNode);
 				currentnode = newNode;
 			}
 			size++;
@@ -49,15 +51,17 @@ void List::Insert() {
 				if (currentnode != headnode) {
 					newNode->setobject(x);
 					newNode->setNext(currentnode);
-					LCN->setNext(newNode);
+					newNode->setPre(currentnode->getPre());
+					(currentnode->getPre())->setNext(newNode);
+					currentnode->setPre(newNode);
 					currentnode = newNode;
 				}
 				else {
 					newNode->setobject(x);
 					newNode->setNext(currentnode);
+					newNode->setPre(nullptr);
 					headnode = newNode;
 					currentnode = newNode;
-					LCN = newNode;
 				}
 				cout << "\t\t\t\t***New Node Has been Inserted***" << endl;
 				size++;
@@ -73,26 +77,10 @@ void List::Insert() {
 		cout << "\t\t\t\tEnter the value" << endl;
 		cin >> x;
 		newNode->setobject(x);
-		if (headnode == nullptr)
-		{
 			headnode = newNode;
 			currentnode = newNode;
-			LCN = newNode;
 			newNode->setNext(nullptr);
-		}
-		else if (currentnode->getNext() == nullptr) {
-			currentnode->setNext(newNode);
-			LCN = currentnode;
-			currentnode = newNode;
-			currentnode->setNext(nullptr);
-		}
-		else
-		{
-			newNode->setNext(currentnode->getNext());
-			LCN = currentnode;
-			LCN->setNext(newNode);
-			currentnode = newNode;
-		}
+			newNode->setPre(nullptr);
 		size++;
 		cout << "\t\t\t\t***New Node Has been Inserted***" << endl;
 	}
@@ -120,23 +108,26 @@ void List::Delete() {
 		if (flag == 1)
 		{
 			if (currentnode == headnode) {
-				headnode = headnode->getNext();
-				delete currentnode;
-				LCN = headnode;
-				size--;
+				Node *temp = currentnode;
+				currentnode = currentnode->getNext();
+				currentnode->setPre(nullptr);
+				headnode = currentnode;
+				delete temp;
 			}
 			else if (currentnode->getNext() == nullptr) {
-				delete currentnode;
-				LCN->setNext(nullptr);
-				Back();
-				size--;
+				(currentnode->getPre())->setNext(nullptr);
+				Node *temp = currentnode;
+				currentnode = currentnode->getPre();
+				delete temp;
 			}
 			else {
-				LCN->setNext(currentnode->getNext());
-				delete currentnode;
-				currentnode = LCN->getNext();
-				size--;
+				(currentnode->getNext())->setPre(currentnode->getPre());
+				(currentnode->getPre())->setNext(currentnode->getNext());
+				Node *temp = currentnode;
+				currentnode = currentnode->getNext();
+				delete temp;
 			}
+			size--;
 			cout << "\t\t\t\t***Node has Been Deleted***" << endl;
 		}
 	}
@@ -186,19 +177,9 @@ void List::Next() {
 //Back Method
 void List::Back() {
 	if (size != 0) {
-		Node *temp = headnode;
-		Node *ltemp = headnode;
-		while (temp != LCN)
-		{
-			ltemp = LCN;
-			temp = temp->getNext();
-		}
-		currentnode = temp;
-		LCN = ltemp;
-		cout << "\t\t\t\t***On BacK Node Successfull..***" << endl;
-		/*if (currentnode = headnode) {
-			cout << "***You cant go back further..***" << endl;
-		}*/
+		
+		currentnode=(currentnode->getPre());
+		cout << "\t\t\t\t***You Are On Tail***" << endl;
 		
 	}
 	else
@@ -209,7 +190,6 @@ void List::Back() {
 void List::Tail() {
 	if (headnode != nullptr) {
 		while (currentnode->getNext() != nullptr) {
-			LCN = currentnode;
 			currentnode = currentnode->getNext();
 		}
 		cout << "\t\t\t\t***You Are On Tail***" << endl;
@@ -230,17 +210,17 @@ void List::Get() {
 void List::Size() {
 	cout << "\t\t\t\tSize Of Node is " << size;
 };
-//Find Method
+//Find Method/*
 int List::Find() {
 	if (size != 0) {
 		int flag = 0;
-		int fin;
+		int find;
 		Node *temp = headnode;
 		Node *ltemp = headnode;
 		cout << "\t\t\t\tEnter value:";
-		cin >> fin;
+		cin >> find;
 		while (temp != nullptr) {
-			if (temp->getobject() == fin) {
+			if (temp->getobject() == find) {
 				cout << "\t\t\t\tVALUE FOUNDED" << endl;
 				flag = 1;
 				LCN = ltemp;
@@ -261,7 +241,6 @@ int List::Find() {
 	}
 	else
 		cout << "\t\t\t\tYou cant perform this action, without any Node" << endl;
-
 };
 //Exit Method
 void List::Exit() {

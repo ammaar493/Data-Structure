@@ -4,6 +4,7 @@ class Node
 public:
 	int object;
 	Node *next;
+	Node *pre;
 
 
 public:
@@ -20,14 +21,23 @@ public:
 	{
 		return next;
 	}
+	Node *getPre()
+	{
+		return pre;
+	}
 	void setNext(Node *next)
 	{
 		this->next = next;
+	}
+	void setPre(Node *pre)
+	{
+		this->pre = pre;
 	}
 
 	Node()//constructor
 	{
 		next = nullptr;
+		pre = nullptr;
 		object = 0;
 	}
 	~Node()//destructor
